@@ -1,4 +1,4 @@
-var common = require('common');
+var common = require('./../common/common');
 
 var verbose = false;
 
@@ -112,9 +112,9 @@ var harvester =
         }
     },
     
-    fillTowers: function(creep)
+    fillTowers: function(creep, room)
     {
-        var towers = Game.rooms[common.RoomName()].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+        var towers = Game.rooms[common.RoomName(room)].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
         
         for ( var index = 0; index < towers.length; index++ )
         {
@@ -128,9 +128,9 @@ var harvester =
         }
     },
     
-    checkTowersNotFull: function()
+    checkTowersNotFull: function(room)
     {
-        var towers = Game.rooms[common.RoomName()].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+        var towers = Game.rooms[common.RoomName(room)].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
         
         for ( var index = 0; index < towers.length; index++ )
         {
@@ -163,15 +163,15 @@ var harvester =
     },
     
     
-    select_task: function (creep)
+    select_task: function (creep, room)
     {
         if (creep.memory.state === 'harvesting')
         {
             if (creep.carry.energy === creep.carryCapacity)
             {
-                if(Game.spawns[common.SpawnName()].energy < Game.spawns[common.SpawnName()].energyCapacity || this.check_extensions_not_full(creep) || this.checkTowersNotFull())
+                if(Game.spawns[common.SpawnName()].energy < Game.spawns[common.SpawnName()].energyCapacity || this.check_extensions_not_full(creep) || this.checkTowersNotFull(room))
                 {
-                    if ( this.checkTowersNotFull() )
+                    if ( this.checkTowersNotFull(room) )
                     {
                         creep.memory.state = 'fill_towers';  
                     }
@@ -194,7 +194,7 @@ var harvester =
         {
             creep.memory.state = 'harvesting';
         }
-        else if(creep.memory.state === 'fill_towers' && !this.checkTowersNotFull())
+        else if(creep.memory.state === 'fill_towers' && !this.checkTowersNotFull(room))
         {
             creep.memory.state = 'harvesting';
         }
@@ -209,10 +209,10 @@ var harvester =
 
 
     /** @param {Creep} creep **/
-    run: function(creep) 
+    run: function(creep, room) 
     {
         
-        this.select_task(creep);
+        this.select_task(creep, room);
         if (creep.memory.state === 'harvesting')
         {
             this.harvest(creep);
@@ -231,7 +231,7 @@ var harvester =
         }
         else if (creep.memory.state === 'fill_towers')
         {
-            this.fillTowers(creep);
+            this.fillTowers(creep, room);
         }
     }
 };

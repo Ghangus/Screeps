@@ -1,39 +1,32 @@
-var common = require('common');
+var common = require('./../common/common');
 
-var harvester = require('role.harvester');
-var upgrader = require('role.upgrader');
-var roleTower = require('role.tower');
-var defender = require('role.defender');
+var harvester = require('./role.harvester');
+var upgrader = require('./role.upgrader');
+var roleTower = require('./role.tower');
+var defender = require('./role.defender');
+
+var creepLogic = require('./../creeps');
 
 var creep_runner =
 {
-    run: function()
+    run: function(room)
     {
-        for (var name in Game.creeps)
-        {
+
+        for(var name in Game.creeps) {
             var creep = Game.creeps[name];
-            if (creep.memory.role === 'harvester')
-            {
-                harvester.run(creep);
-            }
-            else if (creep.memory.role === 'upgrader')
-            {
-                
-                upgrader.run(creep);
-            }
-            else if (creep.memory.role === 'defender')
-            {
-                defender.run(creep);
+    
+            let role = creep.memory.role;
+            if (creepLogic[role]) {
+                creepLogic[role].run(creep, room);
             }
         }
+       
         
-        
-        var towers = Game.rooms[common.RoomName()].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}})
+        var towers = Game.rooms[common.RoomName(room)].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}})
         if(towers)
         {
             for (var tower in towers)
             {
-    
                 roleTower.run(towers[tower]);
             }
         }

@@ -1,4 +1,4 @@
-var common = require('common');
+var common = require('./../common/common');
 
 var verbose = true;
 var moduleName = 'Spawn runner';
@@ -22,19 +22,19 @@ var spawn_runner =
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
         var defenders = _.filter(Game.creeps, (creep) => creep.memory.role === 'defender');
 
-        if(harvesters.length < 4)
+        if(harvesters.length < 2)
         {
             var newName = 'Harvester' + Game.time;
             common.Log(verbose, 'Spawning new lvl 30 harvester: ' + newName, moduleName)
             Game.spawns[common.SpawnName()].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName,{memory: {role: 'harvester', state: 'harvesting'}});
         }
-        else if (upgraders.length < 4)
+        else if (upgraders.length < 2)
         {
             var newName = 'Upgrader' + Game.time;
             common.Log(verbose, 'Spawning new lvl 30 upgrader: ' + newName, moduleName)
             Game.spawns[common.SpawnName()].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName,{memory: {role: 'upgrader', state: 'harvesting'}});
         }
-        else if (defenders.length < 2)
+        else if (defenders.length < 1)
         {
             var newName = 'defender' + Game.time;
             common.Log(verbose, 'Spawning new lvl 30 defender: ' + newName, moduleName)
@@ -48,19 +48,19 @@ var spawn_runner =
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
         var defenders = _.filter(Game.creeps, (creep) => creep.memory.role === 'defender');
 
-        if(harvesters.length < 4)
+        if(harvesters.length < 2)
         {
             var newName = 'Harvester' + Game.time;
             common.Log(verbose, 'Spawning new lvl 10 harvester: ' + newName, moduleName)
             Game.spawns[common.SpawnName()].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], newName,{memory: {role: 'harvester', state: 'harvesting'}});
         }
-        else if (upgraders.length < 4)
+        else if (upgraders.length < 2)
         {
             var newName = 'Upgrader' + Game.time;
             common.Log(verbose, 'Spawning new lvl 10 upgrader: ' + newName, moduleName)
             Game.spawns[common.SpawnName()].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], newName,{memory: {role: 'upgrader', state: 'harvesting'}});
         }
-        else if (defenders.length < 2)
+        else if (defenders.length < 1)
         {
             var newName = 'defender' + Game.time;
             common.Log(verbose, 'Spawning new lvl 10 defender: ' + newName, moduleName)
@@ -74,13 +74,13 @@ var spawn_runner =
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
         var defenders = _.filter(Game.creeps, (creep) => creep.memory.role === 'defender');
 
-        if(harvesters.length < 5)
+        if(harvesters.length < 3)
         {
             var newName = 'Harvester' + Game.time;
             common.Log(verbose, 'Spawning new lvl 5 harvester: ' + newName, moduleName);
             Game.spawns[common.SpawnName()].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,{memory: {role: 'harvester', state: 'harvesting'}});
         }
-        else if (upgraders.length < 5)
+        else if (upgraders.length < 3)
         {
             var newName = 'Upgrader' + Game.time;
             common.Log(verbose, 'Spawning new lvl 5 upgrader: ' + newName, moduleName);
@@ -100,19 +100,19 @@ var spawn_runner =
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
         var defenders = _.filter(Game.creeps, (creep) => creep.memory.role === 'defender');
 
-        if(harvesters.length < 6)
+        if(harvesters.length < 3)
         {
             var newName = 'Harvester' + Game.time;
             common.Log(verbose, 'Spawning new lvl 0 harvester: ' + newName, moduleName);
             Game.spawns[common.SpawnName()].spawnCreep([WORK, CARRY, MOVE], newName,{memory: {role: 'harvester', state: 'harvesting', errors: 0}});
         }
-        else if (upgraders.length < 6)
+        else if (upgraders.length < 3)
         {
             var newName = 'Upgrader' + Game.time;
             common.Log(verbose, 'Spawning new lvl 0 upgrader: ' + newName, moduleName);
             Game.spawns[common.SpawnName()].spawnCreep([WORK, CARRY, MOVE], newName,{memory: {role: 'upgrader', state: 'harvesting', errors: 0}});
         }
-        else if (defenders.length < 2)
+        else if (defenders.length < 1)
         {
             var newName = 'defender' + Game.time;
             common.Log(verbose, 'Spawning new lvl 0 defender: ' + newName, moduleName);
@@ -120,7 +120,7 @@ var spawn_runner =
         }
     },
 
-    spawn_creeps: function()
+    spawn_creeps: function(room)
     {
         var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvester');
 
@@ -135,7 +135,7 @@ var spawn_runner =
         else
         {
             common.Log(verbose, 'Updating spawn level', moduleName);
-            this.update_spawn_level(this.get_spawn_level(Game.rooms[common.RoomName()]));
+            this.update_spawn_level(this.get_spawn_level(Game.rooms[common.RoomName(room)]));
         }
 
         switch (spawn_level)
@@ -202,9 +202,9 @@ var spawn_runner =
         }
     },
 
-    check_should_spawn: function ()
+    check_should_spawn: function (room)
     {
-      if(Game.rooms[common.RoomName()].find(FIND_MY_CREEPS).length < ((max_spawn_level * 2) - spawn_level))
+      if(Game.rooms[common.RoomName(room)].find(FIND_MY_CREEPS).length < ((max_spawn_level * 2) - spawn_level))
       {
           common.Log(verbose, 'Creep should spawn', moduleName);
           return true;
@@ -213,12 +213,12 @@ var spawn_runner =
       return false;
     },
     
-    run: function ()
+    run: function (room)
     {
         this.clear_dead_creeps();
-        if(this.check_should_spawn())
+        if(this.check_should_spawn(room))
         {
-            this.spawn_creeps();
+            this.spawn_creeps(room);
         }
     }
 };

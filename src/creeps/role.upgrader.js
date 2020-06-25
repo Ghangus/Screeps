@@ -1,4 +1,4 @@
-var common = require('common');
+var common = require('./../common/common');
 
 var verbose = false;
 
@@ -25,7 +25,7 @@ module.exports =
         }
     },
     
-    select_task: function (creep)
+    select_task: function (creep, room)
     {
         if (creep.memory.state == 'harvesting')
         {
@@ -44,7 +44,7 @@ module.exports =
         }
     },
     
-    run: function (creep)
+    run: function (creep, room)
     {
         this.select_task(creep);
         if (creep.memory.state == 'harvesting')

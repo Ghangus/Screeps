@@ -1,4 +1,4 @@
-var common = require('common');
+var common = require('./../common/common');
 
 var builder =
 {
@@ -17,7 +17,7 @@ var builder =
         }
     },
 
-    run: function( )
+    run: function( room )
     {
         this.BuildRoadTo(common.SpawnName(), FIND_SOURCES);
     }

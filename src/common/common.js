@@ -1,5 +1,5 @@
 var spawnName = 'Spawn1';
-var roomName = 'W34N41';
+var roomName = 'E33S23';
 
 var prevLogMessage = '';
 
@@ -10,9 +10,9 @@ var common =
         return spawnName
     },
 
-    RoomName: function()
+    RoomName: function( room )
     {
-        return roomName;
+        return room.name;
     },
 
     CreepSay: function ( creep, verbose, message )
