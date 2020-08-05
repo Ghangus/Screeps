@@ -6,10 +6,17 @@ const { forEach } = require('lodash');
 
 module.exports.loop = function ()
 {
+    if(Game.cpu.bucket > 9000 )
+    {
+        console.log("Generating Pixels!");
+        Game.cpu.generatePixel();
+    }
+
+
     Game.myRooms = _.filter(Game.rooms, r => r.controller && r.controller.level > 0 && r.controller.my);
 
     Game.myRooms.forEach(room => {
-        builder.run(room);
+        //builder.run(room);
         creep_runner.run(room);
         spawn_runner.run(room);
     });

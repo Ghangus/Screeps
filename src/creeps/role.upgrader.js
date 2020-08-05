@@ -47,13 +47,23 @@ module.exports =
     run: function (creep, room)
     {
         this.select_task(creep);
-        if (creep.memory.state == 'harvesting')
+
+        if(verbose)
         {
-            this.harvest(creep);
+            creep.say(creep.memory.state)
         }
-        else if (creep.memory.state == 'upgrading')
-        {
-            this.upgrade(creep);
+
+        switch (creep.memory.state) {
+            case 'harvesting':
+                this.harvest(creep);
+                break;
+
+            case 'upgrading':
+                this.upgrade(creep);
+                break;
+        
+            default:
+                break;
         }
     }
 };

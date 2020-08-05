@@ -59,10 +59,16 @@ const { forEach } = __require(5,0);
 
 module.exports.loop = function ()
 {
+    if(Game.cpu.bucket > 9000 )
+    {
+        console.log("Generating Pixels!");
+        Game.cpu.generatePixel();
+    }
+
+
     Game.myRooms = _.filter(Game.rooms, r => r.controller && r.controller.level > 0 && r.controller.my);
 
     Game.myRooms.forEach(room => {
-        builder.run(room);
         creep_runner.run(room);
         spawn_runner.run(room);
     });
@@ -109,7 +115,7 @@ var creep_runner =
         {
             for (var tower in towers)
             {
-                roleTower.run(towers[tower]);
+                roleTower.run(towers[tower], room);
             }
         }
     }
@@ -143,13 +149,13 @@ var spawn_runner =
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
         var defenders = _.filter(Game.creeps, (creep) => creep.memory.role === 'defender');
 
-        if(harvesters.length < 2)
+        if(harvesters.length < 3)
         {
             var newName = 'Harvester' + Game.time;
             common.Log(verbose, 'Spawning new lvl 30 harvester: ' + newName, moduleName)
             Game.spawns[common.SpawnName()].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName,{memory: {role: 'harvester', state: 'harvesting'}});
         }
-        else if (upgraders.length < 2)
+        else if (upgraders.length < 3)
         {
             var newName = 'Upgrader' + Game.time;
             common.Log(verbose, 'Spawning new lvl 30 upgrader: ' + newName, moduleName)
@@ -169,13 +175,13 @@ var spawn_runner =
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
         var defenders = _.filter(Game.creeps, (creep) => creep.memory.role === 'defender');
 
-        if(harvesters.length < 2)
+        if(harvesters.length < 3)
         {
             var newName = 'Harvester' + Game.time;
             common.Log(verbose, 'Spawning new lvl 10 harvester: ' + newName, moduleName)
             Game.spawns[common.SpawnName()].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], newName,{memory: {role: 'harvester', state: 'harvesting'}});
         }
-        else if (upgraders.length < 2)
+        else if (upgraders.length < 3)
         {
             var newName = 'Upgrader' + Game.time;
             common.Log(verbose, 'Spawning new lvl 10 upgrader: ' + newName, moduleName)
@@ -195,7 +201,7 @@ var spawn_runner =
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
         var defenders = _.filter(Game.creeps, (creep) => creep.memory.role === 'defender');
 
-        if(harvesters.length < 3)
+        if(harvesters.length < 2)
         {
             var newName = 'Harvester' + Game.time;
             common.Log(verbose, 'Spawning new lvl 5 harvester: ' + newName, moduleName);
@@ -221,7 +227,7 @@ var spawn_runner =
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
         var defenders = _.filter(Game.creeps, (creep) => creep.memory.role === 'defender');
 
-        if(harvesters.length < 3)
+        if(harvesters.length < 2)
         {
             var newName = 'Harvester' + Game.time;
             common.Log(verbose, 'Spawning new lvl 0 harvester: ' + newName, moduleName);
@@ -12840,27 +12846,37 @@ var harvester =
     /** @param {Creep} creep **/
     run: function(creep, room) 
     {
-        
         this.select_task(creep, room);
-        if (creep.memory.state === 'harvesting')
+
+        if(verbose)
         {
-            this.harvest(creep);
+            creep.say(creep.memory.state)
         }
-        else if (creep.memory.state === 'building')
+
+        switch (creep.memory.state) 
         {
-            this.build(creep)
-        }
-        else if (creep.memory.state === 'turning_in')
-        {
-            this.turn_in(creep);
-        }
-        else if (creep.memory.state === 'repair')
-        {
-            this.repair(creep);
-        }
-        else if (creep.memory.state === 'fill_towers')
-        {
-            this.fillTowers(creep, room);
+            case 'harvesting':
+                this.harvest(creep);
+                break;
+    
+            case 'building':
+                this.build(creep);
+                break;
+
+            case 'turning_in':
+                this.turn_in(creep);
+                break;
+        
+            case 'repair':
+                this.repair(creep);
+                break;
+
+            case 'fill_towers':
+                this.fillTowers(creep, room);
+                break;
+
+            default:
+                break;
         }
     }
 };
@@ -12920,13 +12936,23 @@ module.exports =
     run: function (creep, room)
     {
         this.select_task(creep);
-        if (creep.memory.state == 'harvesting')
+
+        if(verbose)
         {
-            this.harvest(creep);
+            creep.say(creep.memory.state)
         }
-        else if (creep.memory.state == 'upgrading')
-        {
-            this.upgrade(creep);
+
+        switch (creep.memory.state) {
+            case 'harvesting':
+                this.harvest(creep);
+                break;
+
+            case 'upgrading':
+                this.upgrade(creep);
+                break;
+        
+            default:
+                break;
         }
     }
 };
@@ -12949,7 +12975,7 @@ module.exports =
 {
     run: function (tower, room)
     {
-        var hostiles = Game.rooms[common.RoomName()].find(FIND_HOSTILE_CREEPS);
+        var hostiles = Game.rooms[common.RoomName(room)].find(FIND_HOSTILE_CREEPS);
         if(hostiles.length > 0) 
         {
             var username = hostiles[0].owner.username;

@@ -211,27 +211,37 @@ var harvester =
     /** @param {Creep} creep **/
     run: function(creep, room) 
     {
-        
         this.select_task(creep, room);
-        if (creep.memory.state === 'harvesting')
+
+        if(verbose)
         {
-            this.harvest(creep);
+            creep.say(creep.memory.state)
         }
-        else if (creep.memory.state === 'building')
+
+        switch (creep.memory.state) 
         {
-            this.build(creep)
-        }
-        else if (creep.memory.state === 'turning_in')
-        {
-            this.turn_in(creep);
-        }
-        else if (creep.memory.state === 'repair')
-        {
-            this.repair(creep);
-        }
-        else if (creep.memory.state === 'fill_towers')
-        {
-            this.fillTowers(creep, room);
+            case 'harvesting':
+                this.harvest(creep);
+                break;
+    
+            case 'building':
+                this.build(creep);
+                break;
+
+            case 'turning_in':
+                this.turn_in(creep);
+                break;
+        
+            case 'repair':
+                this.repair(creep);
+                break;
+
+            case 'fill_towers':
+                this.fillTowers(creep, room);
+                break;
+
+            default:
+                break;
         }
     }
 };

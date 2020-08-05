@@ -6,7 +6,7 @@ module.exports =
 {
     run: function (tower, room)
     {
-        var hostiles = Game.rooms[common.RoomName()].find(FIND_HOSTILE_CREEPS);
+        var hostiles = Game.rooms[common.RoomName(room)].find(FIND_HOSTILE_CREEPS);
         if(hostiles.length > 0) 
         {
             var username = hostiles[0].owner.username;

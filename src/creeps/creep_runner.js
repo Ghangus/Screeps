@@ -27,7 +27,7 @@ var creep_runner =
         {
             for (var tower in towers)
             {
-                roleTower.run(towers[tower]);
+                roleTower.run(towers[tower], room);
             }
         }
     }
