@@ -17,6 +17,11 @@ var builder =
         }
     },
 
+    BuildRoadAtCreepLocation: function( creep )
+    {
+        creep.pos.createConstructionSite(STRUCTURE_ROAD);
+    },
+
     run: function( room )
     {
         this.BuildRoadTo(common.SpawnName(), FIND_SOURCES);

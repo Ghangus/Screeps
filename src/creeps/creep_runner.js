@@ -1,4 +1,5 @@
 var common = require('./../common/common');
+var builder = require('./../room/builder');
 
 var harvester = require('./role.harvester');
 var upgrader = require('./role.upgrader');

@@ -1,4 +1,5 @@
 var common = require('./../common/common');
+var builder = require('./../room/builder');
 
 var verbose = false;
 
@@ -76,24 +77,40 @@ var harvester =
             }
         }
     },
+
+    anything_to_repair: function (creep)
+    {
+        var walls = creep.room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_WALL});  
+        if (walls)
+        {
+            for (var wall in walls)
+            {
+                if (walls[wall].hits < walls[wall].hitsMax/1000)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    },
     
     repair_wall: function (creep)
     {
-      var walls = creep.room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_WALL});  
-      if (walls)
-      {
-          for (var wall in walls)
-          {
-              if (walls[wall].hits < walls[wall].hitsMax/1000)
-              {
-                  if (creep.repair(walls[wall]) == ERR_NOT_IN_RANGE)
-                  {
-                      creep.moveTo(walls[wall]);
-                      break;
-                  }
-              }
-          }
-      }
+        var walls = creep.room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_WALL});  
+        if (walls)
+        {
+            for (var wall in walls)
+            {
+                if (walls[wall].hits < walls[wall].hitsMax/100)
+                {
+                    if (creep.repair(walls[wall]) == ERR_NOT_IN_RANGE)
+                    {
+                        creep.moveTo(walls[wall]);
+                        break;
+                    }
+                }
+            }
+        }
     },
     
     repair: function (creep)
@@ -161,49 +178,67 @@ var harvester =
         }
         return false;
     },
+
+    
     
     
     select_task: function (creep, room)
     {
-        if (creep.memory.state === 'harvesting')
+        if (creep.carry.energy === 0)
         {
-            if (creep.carry.energy === creep.carryCapacity)
-            {
-                if(Game.spawns[common.SpawnName()].energy < Game.spawns[common.SpawnName()].energyCapacity || this.check_extensions_not_full(creep) || this.checkTowersNotFull(room))
+            creep.memory.state = 'harvesting';
+        }
+
+        switch (creep.memory.state) {
+            case 'harvesting':
+                if (creep.carry.energy === creep.carryCapacity)
                 {
-                    if ( this.checkTowersNotFull(room) )
+                    if(Game.spawns[common.SpawnName()].store[RESOURCE_ENERGY] < Game.spawns[common.SpawnName()].store.getCapacity(RESOURCE_ENERGY) || this.check_extensions_not_full(creep) || this.checkTowersNotFull(room))
                     {
-                        creep.memory.state = 'fill_towers';  
+                        if ( this.checkTowersNotFull(room) )
+                        {
+                            creep.memory.state = 'fill_towers';  
+                        }
+                        else
+                        {
+                            creep.memory.state = 'turning_in';
+                        }
+                    }
+                    else if (creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES) != null)
+                    {
+                        creep.memory.state = 'building';
                     }
                     else
                     {
-                        creep.memory.state = 'turning_in';
+                        creep.memory.state = 'repair';
                     }
                 }
-                else if (creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES) != null)
+                break;
+            
+            case 'building':
+                if (creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES) == null)
                 {
-                    creep.memory.state = 'building';
+                    creep.memory.state = 'harvesting';
                 }
-                else
+                break;
+
+            case 'fill_towers':
+                if (!this.checkTowersNotFull(room))
                 {
-                    creep.memory.state = 'repair';
+                    creep.memory.state = 'harvesting';
                 }
-            }
-        }
-        else if (creep.memory.state === 'building' && creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES) == null)
-        {
-            creep.memory.state = 'harvesting';
-        }
-        else if(creep.memory.state === 'fill_towers' && !this.checkTowersNotFull(room))
-        {
-            creep.memory.state = 'harvesting';
-        }
-        else
-        {
-            if (creep.carry.energy === 0)
-            {
+                break;
+
+            case 'repair':
+                if (!this.anything_to_repair(creep))
+                {
+                    creep.memory.state = 'harvesting';
+                }
+                break;
+        
+            default:
                 creep.memory.state = 'harvesting';
-            }
+                break;
         }
     },
 
@@ -212,6 +247,8 @@ var harvester =
     run: function(creep, room) 
     {
         this.select_task(creep, room);
+
+        builder.BuildRoadAtCreepLocation(creep);
 
         if(verbose)
         {

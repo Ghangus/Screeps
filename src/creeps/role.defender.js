@@ -17,7 +17,7 @@ module.exports =
         }
         else
         {
-            creep.moveTo(10,43);
+            creep.moveTo(17,18);
         }
     }
 };

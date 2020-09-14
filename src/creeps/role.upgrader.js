@@ -1,4 +1,5 @@
 var common = require('./../common/common');
+var builder = require('./../room/builder');
 
 var verbose = false;
 
@@ -36,7 +37,6 @@ module.exports =
         }
         else
         {
-            
             if (creep.carry.energy == 0)
             {
                 creep.memory.state = 'harvesting';
@@ -47,6 +47,8 @@ module.exports =
     run: function (creep, room)
     {
         this.select_task(creep);
+
+        builder.BuildRoadAtCreepLocation(creep);
 
         if(verbose)
         {
