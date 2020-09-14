@@ -6,7 +6,7 @@ var moduleName = 'Spawn runner';
 //var BODYPART_COST: { "move": 50, "work": 100, "attack": 80, "carry": 50, "heal": 250, "ranged_attack": 150, "tough": 10, "claim": 600 };
 
 var min_nr_harvesters = 2;
-var spawn_level = 0;
+var spawn_level = 1;
 var max_spawn_level = 10;
 var harvester_level_0_cost = 200;
 var harvester_level_5_cost = 400;
@@ -155,12 +155,24 @@ var spawn_runner =
             case 4:
                 this.spawn_level_4_creeps();
                 break;
+            
+            default:
+                this.spawn_level_4_creeps();
+                break;
         }
     },
 
     get_spawn_level: function (game_room)
     {
-        return game_room.controller.level;
+        var extensions = game_room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
+        if(extensions.length < 5)
+        {
+            return 1;
+        }
+        else
+        {
+            return Math.floor(extensions.length / 5) + 1;
+        }  
     },
     
     clear_dead_creeps: function ()
