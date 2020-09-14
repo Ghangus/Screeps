@@ -12613,7 +12613,7 @@ __modules[8] = function(module, exports) {
 var common = __require(7,8);
 var builder = __require(4,8);
 
-var verbose = false;
+var verbose = true;
 
 var harvester = 
 {
@@ -12629,7 +12629,7 @@ var harvester =
 
     turn_in: function(creep)
     {
-        if(Game.spawns[common.SpawnName()].energy !== Game.spawns[common.SpawnName()].energyCapacity)
+        if(Game.spawns[common.SpawnName()].store[RESOURCE_ENERGY] !== Game.spawns[common.SpawnName()].store.getCapacity(RESOURCE_ENERGY))
         {
             common.CreepSay(creep, verbose, 'Turning in');
             if (creep.transfer(Game.spawns[common.SpawnName()], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE)
@@ -12847,6 +12847,9 @@ var harvester =
                     creep.memory.state = 'harvesting';
                 }
                 break;
+
+            case 'turning_in':
+                break
         
             default:
                 creep.memory.state = 'harvesting';
